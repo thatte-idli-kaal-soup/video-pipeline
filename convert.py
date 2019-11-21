@@ -21,7 +21,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 LOGO_FILE = os.path.join(HERE, "logo.jpg")
 AUDIO_FILE = os.path.join(HERE, "audio.mp3")
 IGNORE_EXTENSIONS = (".txt", ".jpg", ".png", ".yaml")
-CODEC_MAP = {"h264": "libx264", "hevc": "libx265"}
+CODEC_MAP = {
+    "h264": "libx264",
+    # "hevc": "libx265"
+}
 
 
 def _video_number(filename):
@@ -97,6 +100,8 @@ def generate_annotation(video_dir):
         .decode("utf8")
         .split()
     )
+    if video_encoding not in CODEC_MAP:
+        return False
     generate_cover_image(video_dir, int(width), int(height))
 
     params = "codec_name"
@@ -122,6 +127,7 @@ def generate_annotation(video_dir):
         ext=video_ext,
     )
     subprocess.check_output(command.split(), cwd=video_dir)
+    return True
 
 
 def generate_concatenated_video(video_dir):
@@ -159,8 +165,12 @@ def generate_concatenated_video(video_dir):
 
 
 def main(video_dir):
-    generate_annotation(video_dir)
+    annotated = generate_annotation(video_dir)
     generate_concatenated_video(video_dir)
+    if not annotated:
+        print(
+            "Did not generate an annotation video. Video format is not supported currently"
+        )
 
 
 if __name__ == "__main__":
