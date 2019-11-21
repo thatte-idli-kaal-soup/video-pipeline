@@ -12,13 +12,22 @@ from urllib.parse import unquote
 INPUT_TXT = "input.txt"
 OUTPUT_FILE = "output.mkv"
 
-IGNORE_EXTENSIONS = {".txt", ".jpg"}
+IGNORE_EXTENSIONS = (".txt", ".jpg")
 
 
 def _video_number(filename):
     numbers = re.findall(r"\d+", unquote(filename).rsplit(".")[0])
     num = int(numbers[-1])
     return num
+
+
+def _get_video_list(video_dir):
+    videos = [
+        name
+        for name in os.listdir(video_dir)
+        if not name.lower().endswith(IGNORE_EXTENSIONS)
+    ]
+    return videos
 
 
 def generate_concatenated_video(video_dir):
@@ -31,11 +40,7 @@ def generate_concatenated_video(video_dir):
     if os.path.exists(os.path.join(video_dir, OUTPUT_FILE)):
         print('Output video file "{}" already exists!'.format(OUTPUT_FILE))
         return
-    videos = [
-        name
-        for name in os.listdir(video_dir)
-        if not name.lower().endswith(".txt")
-    ]
+    videos = _get_video_list(video_dir)
     if len(videos) == 1:
         video = videos[0]
         print('Renaming single video "{}" to "{}"'.format(video, OUTPUT_FILE))
