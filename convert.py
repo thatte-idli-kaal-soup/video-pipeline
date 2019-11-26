@@ -78,6 +78,9 @@ def generate_cover_image(video_dir, width, height):
     # Insert logo
     logo = Image.open(LOGO_FILE, "r")
     logo_w, logo_h = logo.size
+    if venue_y + v_h > height - logo_h - 10:
+        logo.thumbnail((logo_w / 2, logo_h / 2), Image.ANTIALIAS)
+        logo_w, logo_h = logo.size
     offset = ((width - logo_w - 10), (height - logo_h - 10))
     img.paste(logo, offset)
 
